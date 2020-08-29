@@ -6,14 +6,17 @@ import Sidebar from './Sidebar'
 import Content from './Content'
 import Playbar from './Playbar'
 
+import media from '../../media.json'
+
 export const StoreContext = createContext(null)
 
 const DEFAULT_PLAYLIST = 'home'
 
 const initialState = {
+  media,
   currentPlaylist: DEFAULT_PLAYLIST,
   playlists: {
-    home: new Set(),
+    home: new Set(media.ids),
     favorites: new Set()
   }
 }
