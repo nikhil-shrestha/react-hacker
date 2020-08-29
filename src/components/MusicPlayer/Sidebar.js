@@ -1,6 +1,7 @@
 /** @jsx jsx */
-import React, { useState, useRef } from 'react'
+import React, { useState, useRef, useContext } from 'react'
 import { css, jsx } from '@emotion/core'
+import { StoreContext } from './index'
 import Modal from './Modal'
 import Toast from './Toast'
 import logo from '../../img/spotify-white.png'
@@ -8,15 +9,13 @@ import logo from '../../img/spotify-white.png'
 /**
  * @function Sidebar
  */
-const Sidebar = ({ children }) => {
-  const [state, setState] = useState({
-    currentPlaylist: 'home',
-    playlists: {
-      home: new Set(),
-      favorites: new Set()
-    },
+const Sidebar = () => {
+  const [sidebarState, setSidebarState] = useState({
+    modal: false,
     toast: ''
   })
+
+  const { state, dispatch } = useContext(StoreContext)
 
   const playlistRef = useRef(null)
   const playlists = Object.keys(state.playlists)
@@ -25,15 +24,17 @@ const Sidebar = ({ children }) => {
     e.preventDefault()
     const list = playlistRef.current.value
 
-    setState({
-      ...state,
+    dispatch({ type: 'ADD_PLAYLIST', playlist: list })
+
+    setSidebarState({
+      ...sidebarState,
       modal: false,
-      playlists: { ...state.playlists, [list]: new Set() },
       toast: 'Your playlist was created successfully!'
     })
   }
 
-  const handleModal = () => setState({ ...state, modal: !state.modal })
+  const handleModal = () =>
+    setSidebarState({ ...sidebarState, modal: !sidebarState.modal })
 
   return (
     <ul className="Sidebar" css={CSS}>
@@ -45,7 +46,7 @@ const Sidebar = ({ children }) => {
           key={list}
           className={list === state.currentPlaylist ? 'active' : ''}
           onClick={() => {
-            setState({ ...state, currentPlaylist: list })
+            dispatch({ type: 'SET_PLAYLIST', playlist: list })
           }}
         >
           {list}
@@ -57,7 +58,7 @@ const Sidebar = ({ children }) => {
         <span>New Playlist</span>
       </li>
 
-      <Modal show={state.modal} close={handleModal}>
+      <Modal show={sidebarState.modal} close={handleModal}>
         <form onSubmit={addPlaylist}>
           <div className="title">New Playlist</div>
 
@@ -75,9 +76,9 @@ const Sidebar = ({ children }) => {
       </Modal>
 
       <Toast
-        toast={state.toast}
+        toast={sidebarState.toast}
         close={() => {
-          setState({ ...state, toast: '' })
+          setSidebarState({ ...sidebarState, toast: '' })
         }}
       />
     </ul>
