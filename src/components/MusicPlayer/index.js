@@ -30,6 +30,12 @@ const reducer = (state, action) => {
       }
     case 'SET_PLAYLIST':
       return { ...state, currentPlaylist: action.playlist }
+    case 'ADD_FAVORITE':
+      state.playlists.favorites.add(action.songId)
+      return { ...state }
+    case 'REMOVE_FAVORITE':
+      state.playlists.favorites.delete(action.songId)
+      return { ...state }
   }
 
   return state
@@ -41,8 +47,8 @@ const MusicPlayer = () => {
     <StoreContext.Provider value={{ state, dispatch }}>
       <div className="MusicPlayer" css={CSS}>
         <Topbar />
-        <Sidebar></Sidebar>
-        <Content></Content>
+        <Sidebar />
+        <Content />
         <Playbar></Playbar>
       </div>
     </StoreContext.Provider>
